@@ -287,7 +287,7 @@ The table below shows some of these applications. To see the complete list click
 |127. App Launcher|com.simplemobiletools.applauncher|A simple holder for your favourite app launchers.|2018-05-23|https://github.com/SimpleMobileTools/Simple-App-Launcher|
 
 * We tried to apply *H_sc* on 304 repositories (*H_apk &cup; H_gh*) but 7 repositories were not available. Then we analyzed 297 repositories and we found 244 repositories that contains Kotlin code.
-To see the complete list click [here](docs/final_kotlin_repos.md). It is important to mentioned that two repositories appear twice.
+To see the complete list click [here](docs/final_kotlin_dataset.md). It is important to mentioned that two repositories appear twice.
 
 |App name| Package Name| Description | Upload Date | Source-code repo|
 |---|---|---|---|---|	
