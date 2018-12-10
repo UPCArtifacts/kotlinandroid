@@ -379,7 +379,16 @@ ET 12: Other.
 
 To see all graphs click [here](docs/evolution/README.md)
 
-### 4. Analyzing the difference between Kotlin and Java applications in terms of presence of code smells <a name="codesmells"></a>
+### 4. Analyzing the difference between Kotlin and Java applications in terms of presence of code smells 
+
+
+#### Analyzing Apps with Priprika
+
+We removed from our analysis 72 (0.004\%) apks from 13 different applications since Paprika's analysis identified 0 classes and 0 methods. As consequence, 9 applications were removed since the analyses from all apk resulted in 0 classes and 0 methods. 
+We checked manually the repositories of these applications and we found that 3 out of 9 applications are Android Theme, used to customize the interface of Android phones, and did not contain Java or Kotlin files. Moreover, 2 out of 9 are applications not written in Java or Kotlin according the GitHub API. However, 4 out of 9 are regular applications, but only 5 apks were removed. Regarding the 4 applications partially removed, we found one Android Theme that contains Java code, one applications mostly written in C++ and Objective-C and two regular applications, in total 16 apks from these applications were removed.
+
+
+<a name="codesmells"></a>
 
 <style type="text/css">
 .tg .tg-baqh{text-align:center;vertical-align:top}
