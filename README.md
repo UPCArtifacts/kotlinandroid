@@ -1,5 +1,28 @@
 # An Empirical Study on Quality of Android Applications written in Kotlin language<a name="top"></a>
-Here you can find the steps needed to replicate our study.
+Here you can find the steps needed to replicate our study reliazed in our paper **An Empirical Study on Quality of Android Applications written in Kotlin language** published on [https://arxiv.org/abs/1808.00025](https://arxiv.org/abs/1808.00025).
+
+If you want use this information, please cite this paper:
+
+```latex
+@ARTICLE{2018arXiv180800025G,
+       author = {{Gois Mateus}, Bruno and {Martinez}, Matias},
+        title = "{An Empirical Study on Quality of Android Applications written in Kotlin
+        language}",
+      journal = {arXiv e-prints},
+     keywords = {Computer Science - Software Engineering},
+         year = 2018,
+        month = Jul,
+          eid = {arXiv:1808.00025},
+        pages = {arXiv:1808.00025},
+archivePrefix = {arXiv},
+       eprint = {1808.00025},
+ primaryClass = {cs.SE},
+       adsurl = {https://ui.adsabs.harvard.edu/#abs/2018arXiv180800025G},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+```
+
+
 
 ---
 
@@ -9,9 +32,9 @@ Here you can find the steps needed to replicate our study.
 	* [F-Droid](#fdroid)
 	* [AndroidTimeMachine](#androidtimemachine)
 	* [AndroZoo](#androzoo)
-2. [Filtering Kotlin applications](#filtering)
+2. [Building our study dataset](#filtering)
 	* [Getting applications from 2017 and 2018](#recentapps)
-	* [Applying our heuristics to find Kotlin applications](#hs)
+	* [Detecting Kotlin applications](#hs)
 3. [Code evolution of Android applications](#codeevolution)
 4. [Analyzing the difference between Kotlin and Java applications in terms of presence of code smells](#codesmells)
 5. [Detecting changes in the quality evolution trends after introducing Kotlin](#quality)
@@ -20,12 +43,28 @@ Here you can find the steps needed to replicate our study.
 
 ### 1. Creation of a dataset of Kotlin applications <a name="datasetconstruction"></a>
 
+As the goal of our experiment is to study the use and quality of Kotlin code in Android applications,
+we decided to study mobile applications that have at least one version released on 2017 or later.
+As [Kotlin was announced as an official language for Android development in 2017](https://android-developers.googleblog.com/2017/05/android-announces-support-for-kotlin.html), before that date Android developers did not have support from Google for developing Android applications using Kotlin language.
+Therefore, we considered that applications whose last versions date from 2016 or earlier could not give us much information about the use of Kotlin language in the Android domain.
 
-To study the using of Kotlin in the context of mobile development, we need first to select a dataset of mobile applications. In this work, we combined three well-known datasets, [F-droid](http://f-droid.org), [AndroZoo](http://androzoo.uni.lu) and [AndroidTimeMachine](https://androidtimemachine.github.io), to create our dataset.
+Moreover, we need that our dataset of Android applications includes, for each application: 
+
+1.  its source code hosted in a code repository (e.g., GitHub), and 
+2. binary files (apk) of the released versions. 
+
+
+#### Selecting dataset of Android applications
+
+We created our dataset of mobile applications by combining three already defined datasets: [F-droid](http://f-droid.org), [AndroidTimeMachine](https://androidtimemachine.github.io), and [AndroZoo](http://androzoo.uni.lu). To our knowledge those are the three largest publicly available datasets of Android applications that contain applications recently released. 
+
+Let us now to introduce each dataset and to explain the reasons of choosing them. 
 
 #### F-Droid <a name="fdroid"></a>
 
 **F-droid** is a directory of open-source Android applications. All apps listed in this directory are compiled from source and code repositories are publicly linked. In total, F-droid has **1509** applications on **06/04/2018**.
+
+F-droid provides all information we need, i.e, access to a code repository and apks of the different released versions of the applications. However, the number of applications **1509** is low compared with other datasets. For this reason, we decided to mine other Android datasets with the goal of including more applications in our study.
 
 The table below shows some of these applications. To see the complete list click [here](docs/fdroid_all.md).
 
@@ -50,7 +89,8 @@ F-droid provides on the main page of each application a link to download its las
 
 **AndroidTimeMachine** is a graph database of  Android apps which are both accessible on GitHub and Google.
 
-In total, AndroidTimeMachine has **8,431** applications and it is based on publicly-available GitHub mirror available in [BigQuery](https://cloud.google.com/bigquery/public-data/github) dated on 18th October 2018.
+In total, AndroidTimeMachine has **8431** applications and it is based on publicly-available GitHub mirror available in [BigQuery](https://cloud.google.com/bigquery/public-data/github) dated on 18th October 2018. Using the Neo4j database is possible to retrieve for each application its source-code repository link and the application's package name. However, this dataset does not provide any apks from its applications.
+For this reason, we decided to mine the missing apks on AndroZoo dataset. 
 
 The table below shows some of these applications. To see the complete visit the [official website](https://androidtimemachine.github.io).
 
@@ -74,7 +114,7 @@ This dataset is available in two different dockers: (i) first, containing the Ne
 
 **AndroZoo** is dataset of millions of Android apps collected from various data sources using different web crawlers. The sources from which AndroZoo draws include major market places *Google Play, Anzhi, and AppChine*, as well as smaller directories mobile, *AnGeeks, Slideme, ProAndroid, HiApk*, and *F-Droid*.
 
-In total, AndroZoo has **4390288** applications and **7795372** apks on **16/10/2018**.
+In total, AndroZoo has **4390288** applications and **7795372** apks on **16/10/2018**. The list of available APKs is regularly updated on the AndroZoo website, along with metadata for each app as, the main package name, the size of the APK, the version, and the market where the app was downloaded from, etc . However, AndroZoo does not provide a link for the source-code repository of an application, even if an application is open-source.
 
 The table below shows some of these applications. Each line corresponds to one apk file To see the complete list click [here](docs/latest.csv).
 
@@ -90,22 +130,16 @@ The table below shows some of these applications. Each line corresponds to one a
 |com.appautomatic.ankulua.trial|39|play.google.com|16004883|
 |com.kbf.app27730661|70101|play.google.com|1882706|
 
-On the AndroZoo website the list of available APKs are regularly updated, along with metadata on each app as, the main package name, the size of the APK, the version, and the market where the app was downloaded from, etc
 
 Furthermore, the AndroZoo's HTTP API allows to download full and unaltered APKs. 
-[back to the top](#top)
-
-For our experiment, we need the source-code and binary file (apk) from Android applications. F-droid provides both information, it contains only open-source apps and for each application it has a link to a public available source code repository (e.g., to GitHub) and the bytecode (apks) from different released versions and stores the previous versions of each app, which is necessary for studying the app evolution. However, F-Droid is small dataset if compared with AndroZoo. On the other hand, AndroZoo provides different released versions from each app, possibly from different stores, but it does not provide any information about applications' source-code. For that reason, we combined AndroZoo with AndroidTimeMachine. AndroidTimeMachine is considerable bigger than F-droid and it contains only open-source applications published on Google Play and hosted on GitHub, but it does not provide application's binary. Then, we use the application id(package name) to get the intersections between AndroZoo and AndroidTimeMachine, in this way we are able to get the source-code and apks from the set intersection. Therefore, our final dataset, as Figure below shows, corresponds to:  
-
-**F-droid &cup; ( AndroZoo &cap; AndroidTimeMachine)**
-
-![Final dataset](docs/final_dataset.png)
 
 [back to the top](#top)
 
 ---
 
-### 2. Filtering Kotlin applications <a name="filtering"></a>
+### 2. Building our study dataset <a name="filtering"></a>
+
+Now, we present the different steps to build the dataset used in this study.
 
 In this work, we are interested in a subset of mobile applications from F-droid, AndroidTimeMachine and AndroZoo: those that contain Kotlin code.
 
@@ -117,9 +151,10 @@ Consequently, the criterion we used for building our dataset of mobile apps is t
 #### Getting applications from 2017 and 2018 <a name="recentapps"></a>
 
 
-##### From F-Droid
+##### Step 1: Mining F-Droid
 
-Using the upload version provided by F-Droid, total number of applications retrieved from F-Droid by the date of June 4th, 2018 that fulfill our selection criterion is 928. 
+
+Using the upload version provided by F-Droid, total number of applications retrieved from F-Droid by the date of June 4th, 2018 that fulfill our selection criterion is **928** 
 
 The table below shows some of these applications. To see the complete list click [here](docs/fdroid_2017_2018.md).
 
@@ -134,37 +169,65 @@ The table below shows some of these applications. To see the complete list click
 |7.AntennaPod|de.danoeh.antennapod|Advanced podcast manager and player|2018-04-16|https://github.com/antennapod/AntennaPod|
 |8.Another RSS|de.digisocken.anotherrss|reader for multiple RSS feeds in a single, searchable list|2018-05-23|https://github.com/no-go/AnotherRSS|
 
-##### From AndroidTimeMachine and AndroZoo
+However,
+we retrieved **926** applications, since we could not download apks from two applications ([app1](https://f-droid.org/en/packages/org.fdroid.fdroid.privileged.ota/}) [app2](https://f-droid.org/en/packages/org.fdroid.fdroid.ota/)), because for these applications F-Droid provides only zip files. Moreover, the total number of versions (i.e., apks) found corresponding to those applications was **13094**. 
+We could download **11675** apks (**89%**). The rest of apks files (**11%**) were not available.  
 
-Originally, AndroidTimeMachine contains **8431** and the most recent apps contained is from October 2017, since the first step of building this dataset, i.e, query  the publicly-available GitHub mirror available in BigQuery, was executed considering a mirror from that date. In order to get more recent apps and potentially more Kotlin apps, we re-executed the steps needed to create [AndroidTimeMachine](https://androidtimemachine.github.io/dataset/), using the [tool] (https://github.com/AndroidTimeMachine/open_source_android_apps) provided by the authors. 
+##### Step 2: Mining AndrodTimeMachine
 
-**Step executed:**
+The version of  AndroidTimeMachine  presented by its authors  contains **8431** applications and it has been executed in October 2017. As their infrastructure is publicly available,[dataset](https://androidtimemachine.github.io/dataset) and [tool](https://github.com/AndroidTimeMachine/open_source_android_apps),
+we re-executed it on October 2018 with the goal of including more recent applications.
 
-1. Query GitHub data on BigQuery on 18/10/2018 to Find Android Manifest Files 
- - **358,518**  found
- - Includes many build artifacts, included libraries,
-2. Extracting Packages names from each Manifest
- - **114,152** unique packages
-3. Extracting Package names from repositories with only one manifest file (Avoid false/positive)
- - **49,570** unique packages
-4. Filtering for Apps on Google Play
- - **3664** found
-5. Matching of Google Play pages to GitHub repositories
- - **3664** found
+Once we retrieved the list of applications, 
+as difference of the original work we carried out a new step to keep applications whose code repository that have only one Android manifest file.
 
-The table below shows the false/positive avoided by our incluision of a new step, step 3.
+We discovered that their technique for linking code repositories of a mobile application with the corresponding Google Play page can fail if the app repository has more than one manifest. We list that applications that suffer the mentioned problem: [here](docs/wrong_match.md)
 
-|Repo URL|Package|App on Google Play| 
-|---|---|---|
-[FinalHerramientas-2014-2](https://github.com/afmurillo/FinalHerramientas-2014-2)| com.google.android.apps.googlevoice|[Google Voice](https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice)|
-[FinalHerramientas-2014-2](https://github.com/afmurillo/FinalHerramientas-2014-2)| com.google.android.gm|[Gmail](https://play.google.com/store/apps/details?id=com.google.android.gm)|
-[MIUI-XML-6.0-Indonesian](https://github.com/bamz3r/MIUI-XML-6.0-Indonesian)|com.google.android.music|[Google Music](https://play.google.com/store/apps/details?id=com.google.android.music)|
-[react-native-navigation](https://github.com/travelbird/react-native-navigation)|com.airbnb.android|[Airbnb](https://play.google.com/store/apps/details?id=com.airbnb.android)|
-|[foursquared.eclair](https://github.com/sbolisetty/foursquared.eclair)|com.joelapenna.foursquared|[Foursquare](https://play.google.com/store/apps/details?id=com.joelapenna.foursquared)|
+The table below shows the comparison between the numbers found by us resulting of the re-execution of each step and the numbers of the original dataset by Geiger2018:data. In conclusion, we retained  **2156** applications from AndroidTimeMachine, all of them fulfill our selection criterion. 
 
-Using the metadata downloaded from the app store on step 4, more specifically, the field **'updateDate'** that contains the date when the applications was last update, we filtered applications whose were update in 2017 and later. We found **2156** applications that fulfill our selection criterion.
+<table class="tg">
+  <tr>
+    <td class="tg-xldj" rowspan="2">Steps</td>
+    <td class="tg-uys7" colspan="2">AndroidTimeMachine</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">Original</td>
+    <td class="tg-c3ow">Updated</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">1. Finding Android Manifest Files</td>
+    <td class="tg-c3ow">378610</td>
+    <td class="tg-c3ow">358518</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">2. Extracting package Names</td>
+    <td class="tg-c3ow">112153</td>
+    <td class="tg-c3ow">114152</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">3. Discarding repositories with more than one manifest file</td>
+    <td class="tg-c3ow">-</td>
+    <td class="tg-c3ow">49570</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">4. Filtering applications on Google Play</td>
+    <td class="tg-c3ow">9478</td>
+    <td class="tg-c3ow">3664</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">5. Matching of Google Play pages to GitHub repositories</td>
+    <td class="tg-c3ow">8431</td>
+    <td class="tg-c3ow">3664</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">6. Filtering applications from 2017 or later</td>
+    <td class="tg-c3ow">-</td>
+    <td class="tg-c3ow">2156</td>
+  </tr>
+</table>
 
-The table below shows some of these applications. To see the complete list click [here](docs/androidtimemachine_2017_2018.md).
+
+The table below shows some of these applications that fullfil our criterion. To see the complete list click [here](docs/androidtimemachine_2017_2018.md).
 
 App name| Package Name| Description | Upload Date | Source-code repo|
 |---|---|---|---|---|
@@ -178,6 +241,18 @@ App name| Package Name| Description | Upload Date | Source-code repo|
 |8. 2048 (Ads Free)|com.tpcstld.twozerogame|Port of Gabriele Cirulli's 2048 to Android.\n\n+No Ads!\n+No permissions!|Jun 10, 2018|https://github.com/BuddyBuild/2048-Android|
 |9. 5 Calls|org.a5calls.android.a5calls|Make your voice heard: Spend 5 minutes, make 5 calls.|Jul 18, 2018|https://github.com/bryansills/5calls-android|
 |10. 5 Pin Bowling Companion|ca.josephroque.bowlingcompanion|Track 5 pin bowling scores frame-by-frame, along with a medley of statistics!|Sep 29, 2018|https://github.com/sunndog/bowling-companion|
+
+The table below shows the false/positive avoided by our incluision of a new step, step 3.
+
+|Repo URL|Package|App on Google Play| 
+|---|---|---|
+[FinalHerramientas-2014-2](https://github.com/afmurillo/FinalHerramientas-2014-2)| com.google.android.apps.googlevoice|[Google Voice](https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice)|
+[FinalHerramientas-2014-2](https://github.com/afmurillo/FinalHerramientas-2014-2)| com.google.android.gm|[Gmail](https://play.google.com/store/apps/details?id=com.google.android.gm)|
+[MIUI-XML-6.0-Indonesian](https://github.com/bamz3r/MIUI-XML-6.0-Indonesian)|com.google.android.music|[Google Music](https://play.google.com/store/apps/details?id=com.google.android.music)|
+[react-native-navigation](https://github.com/travelbird/react-native-navigation)|com.airbnb.android|[Airbnb](https://play.google.com/store/apps/details?id=com.airbnb.android)|
+|[foursquared.eclair](https://github.com/sbolisetty/foursquared.eclair)|com.joelapenna.foursquared|[Foursquare](https://play.google.com/store/apps/details?id=com.joelapenna.foursquared)|
+
+##### Step 3: Combining AndrodTimeMachine with AndroZoo and F-Droid
 
 Using the packages names of each app, we queried the csv file provided by AndroZoo to identify which applications we could download the apks. Then, we found **236** applications present on F-Droid as well, remaining  **1295**  applications  to  download. Then, we  checked  manually  for  each  of  1295  applications, its pages on GooglePlay and its source-code link, to avoid applications liked with wrong repositories, including applications not open-source, because this would result on downloading wrong apks. We found and removed 54 applications, including some not open-source apps, as Facebook Mensseger  and Twitter.  The  complete  list  of  apps  removed  is  available [here](docs/wrong_match.md).
 
@@ -195,7 +270,13 @@ The table below shows some of these applications. To see the complete list click
 |7. A Mohammed Khaleel’s Invitation|com.slbdev.demo|A Mohammed Khaleel’s Invitation|Aug 9, 2018|https://github.com/alexrainman/CarouselView|
 |8. A.scribe|com.laaidback.ascribe|open-source, minimalist note-taking app|Aug 3, 2017|https://github.com/Laaidback/A.scribe|
 
-In total, our dataset should have **2169** (928 + 1241) applications, but we could not download any apks from two applications, then our final dataset has **2167** apps and **19838** apks.
+#### The resulting dataset 
+
+Our final dataset, named **FAMAZOA** - **F**-droid **A**ndroidtime**M**achine **A**ndroZoo **O**pen-source **A**pplications) corresponds to:  
+
+**F-droid &cup; ( AndroZoo &cap; AndroidTimeMachine)**
+
+In total, our dataset should have **2169** (928 + 1241) applications, but we could not download any apks from two applications, then our final dataset has **2167** apps and **19838** apks. 
 
 The table below shows some of these applications. To see the complete list click [here](docs/final_dataset.md).
 
@@ -213,7 +294,12 @@ The table below shows some of these applications. To see the complete list click
 |10. APK Downloader|ca.barraco.carlo.apkdownloader|Save apps installed on your device to an APK file in your Download folder.|Jun 28, 2018|https://github.com/cbarox/APK-Downloader|
 [back to the top](#top)
 
-#### Applying our heuristics to find Kotlin applications <a name="hs"></a>
+The figure below shows the distribution of apks (released versions) per applications. From F-droid we downloaded in median 6 apks, 
+and from AndroidZoo we downloaded in media 3 apk per application.
+
+![Median of versions by dataset](docs/boxplot_dataset.png)
+
+#### Detecting Kotlin applications="hs"></a>
 
 We build a process to classify both applications and apks retrieved in two categories of applications: (1) written (partially or totally) with Kotlin, and (2) written with Java (not include any line of Kotlin code).
 
@@ -221,17 +307,16 @@ The Figure below shows the process for classifying applications between Kotlin a
 
 ![Pipeline to classify android applications](docs/heuristics.png)
 
-We  first apply a heuristics *H_apk*, Figure (a), that consists of looking for a folder called **kotlin** inside the apk file. To  automatize this task,  we use an Android developer tool provided by the Android SDK, named *apkanalyzer*. Using this heuristic, we first classify each version (apk) of an application. Then, if at least one apk of an application is classified as Kotlin, the heuristic  classifies  the application as 'Kotlin'. 
-Otherwise, it classifies as 'Java'.
-The *H_apk*  provides a cheap and fast approach to get an initial guess about the presence of Kotlin code.
+We  first applied an heuristics *H_apk*, that consists of looking for a folder called **kotlin** inside the apk file. Having such folder is an evidence of having Kotlin code inside the application.  
+To automatize this task,  a tool named *apkanalyzer* included in the Android SDK. Using this heuristic, we first classified each version (apk) of an application.Then, if at least one apk of an application is classified as Kotlin, the heuristic  classified  the application as *Kotlin*. Otherwise, it classifies as *Java*.
+The *H_apk* provides a cheap and fast approach to get an initial guess about the presence of Kotlin code.
 
-At the same time, we apply our second heuristic *H_gh*, Figure(b), which relies on the GitHub API:  for each application hosted on GitHub, we query the GitHub API to retrieve the amount of code (expressed in bytes) from the most recent version (i.e., the HEAD) grouped by the programming language. We classify the app as `Kotlin' if Kotlin language is present in the response of the API. 
+At the same time, we applied our second heuristic *H_gh*, which relies on the GitHub API:  for each application hosted on GitHub, we queried the GitHub API to retrieve the amount of code (expressed in bytes) from the most recent version (i.e., the HEAD) grouped by programming language. We classified the app as `Kotlin' if Kotlin language is present in the response of the API. The input of this heuristic is a URL to a GitHub repository.
 
-Finally, once we retrieve a set of candidate Kotlin applications using *H_apk* and *H_gh*, i.e, ***H\_apk &cup; H\_gh***, we apply the heuristic *H_sc*, Figure(c), to assert the presence of Kotlin code in, at least, one commit.  *H_sc* inspects every commit of the source code repository of an application.
-An application is classified as Kotlin if the heuristic fin>s, at least, one commit that introduces Kotlin code. 
-To carry out this task, the heuristic used the tool [CLOC](http://cloc.sourceforge.net/) which returns a list with the languages used in an application and the amount of code regarding no-blank lines. 
+Finally, once we retrieved a set of candidate Kotlin applications using *H_apk* and *H_gh*, i.e, ***H\_apk &cup; H\_gh***,
+we checked manually the applications repositories to avoid duplicated repositories, i.e, repositories that contain more than one application, we applied the heuristic *H_sc* over them, to assert the presence of Kotlin code and to measure how much Kotlin an application has.  The heuristic *H_sc* inspected every commit of the source code repository of an application.An application was classified as *Kotlin* if the heuristic found at least one commit that had Kotlin code,  and as `Pure Kotlin' if all commits contained only Kotlin code.
 
-Our final dataset corresponds to ***(H\_apk &cup; H\_gh) &cap; H\_sc***.
+![Final dataset](docs/final_dataset.png)
 
 
 ##### Results
@@ -243,10 +328,11 @@ The Table below summarizes the classification of applications  done using the me
 |Unique apps|2167|244|1923|
 |Versions|19838|1590|18248|
 
-Our dataset has **2167** applications: 
-**244 (11.25%)** of them contain, at least, one version (apk) that includes Kotlin code. The rest of the applications, **1923 (88.75%)** do not have any version that contain Kotlin code. 
-The Figure below shows these percentages.  Considering the number of versions (apk), we found 
-**1590** apks **(8.0%)** with Kotlin code and **18248 (92,0%)** without Kotlin code. 
+FAMAZOA has **2167** applications using our heuristics we classified **244 (11.26%)** as *Kotlin* applications. Consequently, the remaining applications, **1923 (88.74%)**, were classified as *Java*. 
+The figure  below shows these percentages.  
+Considering the number of versions (apk), we found 
+1590 apks (8.01%) with Kotlin code and 
+18248 (91.28%) without Kotlin code. 
 
 **Unique apps**
 ![Unique apps](docs/unique_apps.png)
@@ -254,9 +340,11 @@ The Figure below shows these percentages.  Considering the number of versions (a
 **All versions**
 ![Unique apps](docs/apks.png)
 
-Over a total of 2221 Kotlin applications:
+Now, let us to explain how we arrived to detect 244 Kotlin applications from FAMAZOA. 
 
-  *  *H_aph* classified 265 app as 'Kotlin', i.e., those with at least one 'Kotlin' apk. The table below shows some of these applications. To see the complete list click [here](docs/hapk.md).
+First, the heuristic *H_apk* classified 265 applications as *Kotlin*. Those applications have, at least, one apk classified as *Kotlin*. For 76 of them, all apks are classified as *Kotlin*.
+
+  The table below shows some of these applications. To see the complete list click [here](docs/hapk.md).
  
 |App name| Package Name| Description | Upload Date | Source-code repo|
 |---|---|---|---|---|
@@ -269,11 +357,12 @@ Over a total of 2221 Kotlin applications:
 |79. Android Playground|com.esafirm.androidplayground|Android Playground|Jan 3, 2018|https://github.com/esafirm/android-playground|
 |85. AnkiEditor for AnkiDroid|com.jkcarino.ankieditor|An advanced note editor plug-in for AnkiDroid|Sep 29, 2018|https://github.com/jkennethcarino/AnkiEditor|
 
- * *H_gh* classified 234 app as`Kotlin'. Furthermore, 41 out of 234 apps were not classified by *H_apk* as 'Kotlin'. However, we found [two repositories linked with two apps each](docs/sharing_repo.md). We manually checked these repositories and as consequence we removed two apps. For the apps linked with the [repo1](docs/sharing_repo.md#repo1), we realized that the authors used different packages names in two different stores, F-Droid and GooglePlay, for the same app. For the apps linked with [repo2](docs/sharing_repo.md#repo2), we found that one of them is a plugin for the main app and this plugin does not have Kotlin code. 
+
+Then, *H_gh* classified 234 applications as *Kotlin*. 
+193 of them, were also classified as *Kotlin* by *H_apk*.
+Up to here, both heuristics have classified 297 unique applications as *Kotlin*. 
 
 The table below shows some of these applications. To see the complete list click [here](docs/hgh.md).
-
-
 
 |App name| Package Name| Description | Upload Date | Source-code repo|
 |---|---|---|---|---|
@@ -286,7 +375,10 @@ The table below shows some of these applications. To see the complete list click
 |125. Apolline|science.apolline|Application for air pollution monitoring|May 27, 2018|https://github.com/Apolline-Lille/apolline-android|
 |127. App Launcher|com.simplemobiletools.applauncher|A simple holder for your favourite app launchers.|2018-05-23|https://github.com/SimpleMobileTools/Simple-App-Launcher|
 
-* We tried to apply *H_sc* on 304 repositories (*H_apk &cup; H_gh*) but 7 repositories were not available. Then we analyzed 297 repositories and we found 244 repositories that contains Kotlin code.
+
+We found [two repositories linked with two apps each](docs/sharing_repo.md). We manually checked these repositories and as consequence we removed two apps. For the apps linked with the [repo1](docs/sharing_repo.md#repo1), we realized that the authors used different packages names in two different stores, F-Droid and GooglePlay, for the same app. For the apps linked with [repo2](docs/sharing_repo.md#repo2), we found that one of them is a plugin for the main app and this plugin does not have Kotlin code. 
+
+Finally, We tried to apply *H_sc* on 304 repositories (*H_apk &cup; H_gh*) but 7 repositories were not available. Then we analyzed 297 repositories and we found 244 repositories that contains Kotlin code.
 To see the complete list click [here](docs/final_kotlin_repos.md). It is important to mentioned that two repositories appear twice.
 
 |App name| Package Name| Description | Upload Date | Source-code repo|
