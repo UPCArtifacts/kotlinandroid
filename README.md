@@ -181,7 +181,7 @@ we re-executed it on October 2018 with the goal of including more recent applica
 Once we retrieved the list of applications, 
 as difference of the original work we carried out a new step to keep applications whose code repository that have only one Android manifest file.
 
-We discovered that their technique for linking code repositories of a mobile application with the corresponding Google Play page can fail if the app repository has more than one manifest. We list that applications that suffer the mentioned problem: [here](docs/wrong_match.md)
+We discovered that their technique for linking code repositories of a mobile application with the corresponding Google Play page can fail if the app repository has more than one manifest. 
 
 The table below shows the comparison between the numbers found by us resulting of the re-execution of each step and the numbers of the original dataset by Geiger2018:data. In conclusion, we retained  **2156** applications from AndroidTimeMachine, all of them fulfill our selection criterion. 
 
