@@ -1,24 +1,21 @@
 # An Empirical Study on Quality of Android Applications written in Kotlin language<a name="top"></a>
-Here you can find the steps needed to replicate our study reliazed in our paper **An Empirical Study on Quality of Android Applications written in Kotlin language** published on [https://arxiv.org/abs/1808.00025](https://arxiv.org/abs/1808.00025).
+Here you can find the steps needed to replicate our study reliazed in our paper **An Empirical Study on Quality of Android Applications written in Kotlin language** published on [https://link.springer.com/article/10.1007%2Fs10664-019-09727-4](https://link.springer.com/article/10.1007%2Fs10664-019-09727-4).
 
 If you want use this information, please cite this paper:
 
 ```latex
-@ARTICLE{2018arXiv180800025G,
-       author = {{Gois Mateus}, Bruno and {Martinez}, Matias},
-        title = "{An Empirical Study on Quality of Android Applications written in Kotlin
-        language}",
-      journal = {arXiv e-prints},
-     keywords = {Computer Science - Software Engineering},
-         year = 2018,
-        month = Jul,
-          eid = {arXiv:1808.00025},
-        pages = {arXiv:1808.00025},
-archivePrefix = {arXiv},
-       eprint = {1808.00025},
- primaryClass = {cs.SE},
-       adsurl = {https://ui.adsabs.harvard.edu/#abs/2018arXiv180800025G},
-      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+@Article{GóisMateus2019,
+author="G{\'o}is Mateus, Bruno
+and Martinez, Matias",
+title="An empirical study on quality of Android applications written in Kotlin language",
+journal="Empirical Software Engineering",
+year="2019",
+month="Jun",
+day="25",
+abstract="During the last years, developers of mobile applications have the possibility to use new paradigms and tools for developing mobile applications. For instance, since 2017, Android developers have the official support to write Android applications using Kotlin language. Kotlin is programming language fully interoperable with Java that combines object-oriented and functional features.",
+issn="1573-7616",
+doi="10.1007/s10664-019-09727-4",
+url="https://doi.org/10.1007/s10664-019-09727-4"
 }
 ```
 
